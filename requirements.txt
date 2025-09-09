@@ -1,5 +1,7 @@
+flask
 tensorflow
+keras
 opencv-python
 numpy
-Flask
-Pillow
+pillow
+gunicorn
