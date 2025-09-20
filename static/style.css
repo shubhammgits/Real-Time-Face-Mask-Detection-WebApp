@@ -421,6 +421,7 @@ body::before {
     margin-bottom: 1rem;
     box-shadow: var(--shadow-primary);
     position: relative;
+    transition: var(--transition-normal);
 }
 
 .camera-placeholder {
@@ -430,6 +431,7 @@ body::before {
     background: var(--glass-bg);
     height: 180px;
     max-height: 180px;
+    transition: var(--transition-normal);
 }
 
 .placeholder-content {
@@ -460,6 +462,18 @@ body::before {
     max-height: 180px;
     object-fit: cover;
     display: block;
+    transition: var(--transition-normal);
+}
+
+/* Active streaming state - larger view */
+.camera-view.streaming #video-stream {
+    height: 280px;
+    max-height: 280px;
+}
+
+.camera-view.streaming .camera-placeholder {
+    height: 280px;
+    max-height: 280px;
 }
 
 .camera-controls {
@@ -982,6 +996,11 @@ body::before {
         max-height: 150px;
     }
     
+    .camera-view.streaming #video-stream {
+        height: 220px;
+        max-height: 220px;
+    }
+    
     .upload-icon {
         font-size: 1.5rem;
     }
@@ -993,6 +1012,11 @@ body::before {
     .camera-placeholder {
         height: 150px;
         max-height: 150px;
+    }
+    
+    .camera-view.streaming .camera-placeholder {
+        height: 220px;
+        max-height: 220px;
     }
     
     .placeholder-icon {
@@ -1085,6 +1109,11 @@ body::before {
         max-height: 120px;
     }
     
+    .camera-view.streaming #video-stream {
+        height: 180px;
+        max-height: 180px;
+    }
+    
     .preview-actions {
         flex-direction: column;
     }
@@ -1092,6 +1121,11 @@ body::before {
     .camera-placeholder {
         height: 120px;
         max-height: 120px;
+    }
+    
+    .camera-view.streaming .camera-placeholder {
+        height: 180px;
+        max-height: 180px;
     }
     
     .placeholder-title {

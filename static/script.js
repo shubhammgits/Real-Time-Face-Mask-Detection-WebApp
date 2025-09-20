@@ -249,6 +249,9 @@ async function startCamera() {
             elements.startCameraBtn.style.display = 'none';
             elements.stopCameraBtn.style.display = 'inline-block';
             
+            // Add streaming class for expanded view
+            elements.cameraView.classList.add('streaming');
+            
             isStreaming = true;
             updateCameraStatus('Live streaming...', 'active');
         };
@@ -268,6 +271,11 @@ function stopCamera() {
     if (elements.videoStream) {
         elements.videoStream.src = '';
         elements.videoStream.style.display = 'none';
+    }
+    
+    // Remove streaming class to return to normal size
+    if (elements.cameraView) {
+        elements.cameraView.classList.remove('streaming');
     }
     
     elements.cameraPlaceholder.style.display = 'flex';
