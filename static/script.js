@@ -1,6 +1,11 @@
 let currentMode = 'upload';
 let isStreaming = false;
 let uploadedFile = null;
+let mediaStream = null;
+let videoElement = null;
+let canvas = null;
+let context = null;
+let detectionInterval = null;
 
 const elements = {
     modeTabs: document.querySelectorAll('.mode-tab'),
@@ -26,6 +31,7 @@ const elements = {
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     initializeNavigation();
+    initializeCamera();
     checkSystemStatus();
 });
 
@@ -76,6 +82,22 @@ function initializeNavigation() {
             }
         });
     });
+}
+
+function initializeCamera() {
+    // Set up video element for WebRTC
+    videoElement = elements.videoStream;
+    
+    // Create canvas for frame capture
+    canvas = document.createElement('canvas');
+    context = canvas.getContext('2d');
+    
+    // Set video attributes for mobile compatibility
+    if (videoElement) {
+        videoElement.setAttribute('playsinline', 'true');
+        videoElement.setAttribute('webkit-playsinline', 'true');
+        videoElement.muted = true;
+    }
 }
 
 async function checkSystemStatus() {
@@ -206,17 +228,35 @@ async function startCamera() {
     try {
         updateCameraStatus('Starting camera...', 'loading');
         
-        const cameraResponse = await fetch('/camera_status');
-        const cameraStatus = await cameraResponse.json();
-        
-        if (!cameraStatus.available) {
-            throw new Error('Camera not available');
+        // Check for camera support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Camera not supported by this browser');
         }
         
-        const streamUrl = '/video_feed';
-        elements.videoStream.src = `${streamUrl}?t=${Date.now()}`;
+        // Get camera constraints for different devices
+        const constraints = {
+            video: {
+                width: { ideal: 640, max: 1280 },
+                height: { ideal: 480, max: 720 },
+                facingMode: 'user' // Front camera for mobile
+            },
+            audio: false
+        };
         
-        elements.videoStream.onload = () => {
+        // Request camera access
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        
+        // Set up video element
+        videoElement.srcObject = mediaStream;
+        
+        videoElement.onloadedmetadata = () => {
+            videoElement.play();
+            
+            // Set canvas dimensions to match video
+            canvas.width = videoElement.videoWidth || 640;
+            canvas.height = videoElement.videoHeight || 480;
+            
+            // Show video and hide placeholder
             elements.videoStream.style.display = 'block';
             elements.cameraPlaceholder.style.display = 'none';
             elements.startCameraBtn.style.display = 'none';
@@ -226,25 +266,55 @@ async function startCamera() {
             
             isStreaming = true;
             updateCameraStatus('Live streaming...', 'active');
+            
+            // Start real-time detection
+            startRealTimeDetection();
         };
         
-        elements.videoStream.onerror = () => {
-            throw new Error('Failed to load video stream');
+        videoElement.onerror = (error) => {
+            console.error('Video error:', error);
+            throw new Error('Failed to start video stream');
         };
         
     } catch (error) {
         console.error('Camera start error:', error);
+        
+        let errorMessage = 'Camera access failed';
+        if (error.name === 'NotAllowedError') {
+            errorMessage = 'Camera permission denied. Please allow camera access and try again.';
+        } else if (error.name === 'NotFoundError') {
+            errorMessage = 'No camera found on this device.';
+        } else if (error.name === 'NotSupportedError') {
+            errorMessage = 'Camera not supported by this browser.';
+        }
+        
         updateCameraStatus('Camera failed to start', 'error');
-        showNotification(`Camera error: ${error.message}`, 'error');
+        showNotification(errorMessage, 'error');
+        
+        stopCamera();
     }
 }
 
 function stopCamera() {
-    if (elements.videoStream) {
-        elements.videoStream.src = '';
-        elements.videoStream.style.display = 'none';
+    // Stop media stream
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
     }
     
+    // Stop real-time detection
+    if (detectionInterval) {
+        clearInterval(detectionInterval);
+        detectionInterval = null;
+    }
+    
+    // Reset video element
+    if (videoElement) {
+        videoElement.srcObject = null;
+        videoElement.style.display = 'none';
+    }
+    
+    // Reset UI
     if (elements.cameraView) {
         elements.cameraView.classList.remove('streaming');
     }
@@ -255,6 +325,88 @@ function stopCamera() {
     
     isStreaming = false;
     updateCameraStatus('Ready', 'ready');
+    
+    // Clear any camera results
+    closeResults();
+}
+
+function startRealTimeDetection() {
+    if (detectionInterval) {
+        clearInterval(detectionInterval);
+    }
+    
+    // Process frames every 2 seconds for real-time detection
+    detectionInterval = setInterval(async () => {
+        if (isStreaming && videoElement && videoElement.readyState === 4) {
+            await processVideoFrame();
+        }
+    }, 2000);
+}
+
+async function processVideoFrame() {
+    try {
+        // Draw current video frame to canvas
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        
+        // Convert canvas to blob
+        canvas.toBlob(async (blob) => {
+            if (blob) {
+                const formData = new FormData();
+                formData.append('frame', blob, 'frame.jpg');
+                
+                try {
+                    const response = await fetch('/process_frame', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success && result.detections && result.detections.length > 0) {
+                        // Update camera view with detection overlay
+                        updateCameraOverlay(result.detections);
+                    }
+                } catch (error) {
+                    console.error('Frame processing error:', error);
+                }
+            }
+        }, 'image/jpeg', 0.8);
+        
+    } catch (error) {
+        console.error('Video frame processing error:', error);
+    }
+}
+
+function updateCameraOverlay(detections) {
+    // Remove existing overlays
+    const existingOverlays = elements.cameraView.querySelectorAll('.detection-overlay');
+    existingOverlays.forEach(overlay => overlay.remove());
+    
+    // Add new detection overlays
+    detections.forEach((detection, index) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'detection-overlay';
+        overlay.innerHTML = `
+            <div class="detection-label ${detection.label.toLowerCase().replace(' ', '-')}">
+                ${detection.label}: ${detection.confidence.toFixed(1)}%
+            </div>
+        `;
+        
+        // Position overlay (this would need adjustment based on video dimensions)
+        overlay.style.cssText = `
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 10;
+        `;
+        
+        elements.cameraView.appendChild(overlay);
+    });
 }
 
 function updateCameraStatus(text, state = 'ready') {

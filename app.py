@@ -183,67 +183,56 @@ def process_image_detection(img):
     
     return img, detections
 
-def generate_stream(camera_index=0):
-    cap = cv2.VideoCapture(camera_index)
-    
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 20)
-    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    
-    if not cap.isOpened():
-        cap.open(camera_index)
-    
+# Add new endpoint for processing camera frames
+@app.route('/process_frame', methods=['POST'])
+def process_frame():
     try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                print("⚠️ Failed to read frame from camera")
-                break
+        if 'frame' not in request.files:
+            return jsonify({'error': 'No frame data received'}), 400
             
-            processed_frame, _ = process_image_detection(frame.copy())
-            
-            ret, buffer = cv2.imencode('.jpg', processed_frame, 
-                                     [int(cv2.IMWRITE_JPEG_QUALITY), 80])
-            if not ret:
-                continue
-                
-            jpg_bytes = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + jpg_bytes + b'\r\n')
-                   
+        frame_file = request.files['frame']
+        if frame_file.filename == '':
+            return jsonify({'error': 'Empty frame data'}), 400
+        
+        # Read the frame data
+        frame_data = frame_file.read()
+        frame_array = np.frombuffer(frame_data, np.uint8)
+        frame = cv2.imdecode(frame_array, cv2.IMREAD_COLOR)
+        
+        if frame is None:
+            return jsonify({'error': 'Invalid frame data'}), 400
+        
+        # Process the frame for face detection
+        processed_frame, detections = process_image_detection(frame)
+        
+        # Encode processed frame back to base64
+        _, buffer = cv2.imencode('.jpg', processed_frame, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+        frame_base64 = base64.b64encode(buffer).decode('utf-8')
+        
+        return jsonify({
+            'success': True,
+            'processed_frame': f'data:image/jpeg;base64,{frame_base64}',
+            'detections': detections
+        })
+        
     except Exception as e:
-        print(f"❌ Streaming error: {e}")
-    finally:
-        cap.release()
-        print("📹 Camera released")
+        print(f"❌ Frame processing error: {e}")
+        return jsonify({'error': f'Frame processing failed: {str(e)}'}), 500
 
 @app.route('/video_feed')
 def video_feed():
-    try:
-        # Check if we're in a server environment
-        if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('PORT'):
-            return "Camera streaming not available in server environment", 503
-            
-        return Response(generate_stream(), 
-                       mimetype='multipart/x-mixed-replace; boundary=frame')
-    except Exception as e:
-        print(f"❌ Video feed error: {e}")
-        return "Camera not available", 500
+    # This endpoint is not used for web deployment
+    # Camera streaming is handled client-side with WebRTC
+    return "Camera streaming handled client-side", 200
 
 @app.route('/camera_status')
 def camera_status():
-    try:
-        # In production/server environment, camera is typically not available
-        if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('PORT'):
-            return jsonify({'available': False, 'reason': 'Camera not available in server environment'})
-        
-        cap = cv2.VideoCapture(0)
-        available = cap.isOpened()
-        cap.release()
-        return jsonify({'available': available})
-    except Exception as e:
-        return jsonify({'available': False, 'reason': f'Camera error: {str(e)}'})
+    # For web deployment, camera access is handled client-side via WebRTC
+    # Server doesn't need direct camera access
+    return jsonify({
+        'available': True, 
+        'message': 'Camera access handled client-side via WebRTC'
+    })
 
 @app.route('/model_status')
 def model_status():
