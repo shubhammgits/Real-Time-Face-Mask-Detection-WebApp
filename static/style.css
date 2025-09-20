@@ -620,6 +620,23 @@ body::before {
     position: relative;
 }
 
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
 .about-content {
     max-width: 1000px;
     margin: 0 auto;
