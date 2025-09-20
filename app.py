@@ -11,11 +11,9 @@ import json
 
 app = Flask(__name__)
 
-# Global variables
 model = None
 face_cascade = None
 
-# Initialize model and face cascade
 def initialize_components():
     global model, face_cascade
     
@@ -44,7 +42,6 @@ def initialize_components():
         print(f"❌ Error loading face cascade: {e}")
         face_cascade = None
 
-# Initialize components on startup
 initialize_components()
 
 @app.route('/')
@@ -53,7 +50,6 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    """Handle image upload and detection"""
     try:
         if 'file' not in request.files:
             return jsonify({'error': 'No file uploaded'}), 400
@@ -65,7 +61,6 @@ def upload_file():
         if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
             return jsonify({'error': 'Invalid file format. Please upload an image.'}), 400
         
-        # Read and process image
         img_data = file.read()
         img_array = np.frombuffer(img_data, np.uint8)
         img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
@@ -73,10 +68,8 @@ def upload_file():
         if img is None:
             return jsonify({'error': 'Invalid image file'}), 400
         
-        # Process image and get detection results
         processed_img, detections = process_image_detection(img)
         
-        # Convert processed image to base64
         _, buffer = cv2.imencode('.jpg', processed_img)
         img_base64 = base64.b64encode(buffer).decode('utf-8')
         
@@ -91,17 +84,14 @@ def upload_file():
         return jsonify({'error': f'Processing failed: {str(e)}'}), 500
 
 def process_image_detection(img):
-    """Process image and return annotated image with detections"""
     detections = []
     
     if face_cascade is None:
         cv2.putText(img, "Face cascade not loaded", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         return img, detections
     
-    # Convert to grayscale for face detection
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    # Detect faces
     faces = face_cascade.detectMultiScale(
         gray, 
         scaleFactor=1.1, 
@@ -112,69 +102,57 @@ def process_image_detection(img):
     
     for (x, y, w, h) in faces:
         try:
-            # Extract face region
             face_roi = img[y:y+h, x:x+w]
             
             if w < 60 or h < 60:
                 continue
             
-            # If model is available, use it for prediction
             if model is not None:
-                # Preprocess face for model
                 face_resized = cv2.resize(face_roi, (224, 224))
                 face_arr = img_to_array(face_resized)
                 face_arr = np.expand_dims(face_arr, axis=0)
                 face_arr = face_arr / 255.0
                 
-                # Get prediction
                 pred = model.predict(face_arr, verbose=0)
                 prob = float(pred[0][0])
                 
-                # Determine label and confidence
                 if prob < 0.5:
                     label = 'Masked'
                     confidence = (1.0 - prob) * 100
-                    color = (0, 255, 0)  # Green for masked
+                    color = (0, 255, 0)
                     bg_color = (0, 200, 0)
                 else:
                     label = 'No Mask'
                     confidence = prob * 100
-                    color = (0, 0, 255)  # Red for no mask
+                    color = (0, 0, 255)
                     bg_color = (0, 0, 200)
             else:
-                # Demo mode - simulate detection
                 import random
                 is_masked = random.choice([True, False])
                 if is_masked:
                     label = 'Masked'
                     confidence = random.uniform(75, 95)
-                    color = (0, 255, 0)  # Green for masked
+                    color = (0, 255, 0)
                     bg_color = (0, 200, 0)
                 else:
                     label = 'No Mask'
                     confidence = random.uniform(70, 90)
-                    color = (0, 0, 255)  # Red for no mask
+                    color = (0, 0, 255)
                     bg_color = (0, 0, 200)
             
-            # Draw bounding box with thicker lines
             cv2.rectangle(img, (x, y), (x + w, y + h), color, 3)
             
-            # Prepare text
             text = f"{label}: {confidence:.1f}%"
             font = cv2.FONT_HERSHEY_DUPLEX
             font_scale = 0.7
             text_thickness = 2
             
-            # Get text size for background
             (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, text_thickness)
             
-            # Draw text background
             cv2.rectangle(img, (x, y - text_height - 10), (x + text_width + 10, y), bg_color, -1)
             
-            # Draw text
             cv2.putText(img, text, (x + 5, y - 5), font, font_scale, (255, 255, 255), text_thickness, cv2.LINE_AA)
             
-            # Store detection info
             detections.append({
                 'label': label,
                 'confidence': confidence,
@@ -188,10 +166,8 @@ def process_image_detection(img):
     return img, detections
 
 def generate_stream(camera_index=0):
-    """Generate real-time video stream with face mask detection"""
     cap = cv2.VideoCapture(camera_index)
     
-    # Set camera properties
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cap.set(cv2.CAP_PROP_FPS, 20)
@@ -207,10 +183,8 @@ def generate_stream(camera_index=0):
                 print("⚠️ Failed to read frame from camera")
                 break
             
-            # Process frame with detection
             processed_frame, _ = process_image_detection(frame.copy())
             
-            # Encode frame as JPEG
             ret, buffer = cv2.imencode('.jpg', processed_frame, 
                                      [int(cv2.IMWRITE_JPEG_QUALITY), 80])
             if not ret:
@@ -228,7 +202,6 @@ def generate_stream(camera_index=0):
 
 @app.route('/video_feed')
 def video_feed():
-    """Video streaming route"""
     try:
         return Response(generate_stream(), 
                        mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -238,7 +211,6 @@ def video_feed():
 
 @app.route('/camera_status')
 def camera_status():
-    """Check camera availability"""
     try:
         cap = cv2.VideoCapture(0)
         available = cap.isOpened()
@@ -249,7 +221,6 @@ def camera_status():
 
 @app.route('/model_status')
 def model_status():
-    """Check model and cascade status"""
     return jsonify({
         'model_loaded': model is not None,
         'cascade_loaded': face_cascade is not None and not face_cascade.empty()

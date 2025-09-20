@@ -1,46 +1,37 @@
-/* === MODERN DARK THEME VARIABLES === */
 :root {
-    /* Dark Charcoal Color Palette */
     --bg-primary: #0a0a0a;
     --bg-secondary: #111111;
     --bg-tertiary: #1a1a1a;
     --bg-card: #1e1e1e;
     --bg-glass: rgba(255, 255, 255, 0.03);
     
-    /* Accent Colors */
     --accent-primary: #00d4ff;
     --accent-secondary: #0099cc;
     --accent-gradient: linear-gradient(135deg, #00d4ff, #0066ff);
     --accent-glow: 0 0 30px rgba(0, 212, 255, 0.3);
     
-    /* Text Colors */
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
     --text-muted: #666666;
     
-    /* Status Colors */
     --success: #00ff88;
     --danger: #ff4757;
     --warning: #ffa726;
     
-    /* Border & Shadow */
     --border-primary: rgba(255, 255, 255, 0.1);
     --border-accent: rgba(0, 212, 255, 0.3);
     --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.3);
     --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.2);
     
-    /* Glass Effect */
     --glass-backdrop: blur(20px);
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     
-    /* Animation */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
 }
 
-/* === GLOBAL STYLES === */
 * {
     margin: 0;
     padding: 0;
@@ -75,7 +66,6 @@ body::before {
     pointer-events: none;
 }
 
-/* === MAIN SECTION === */
 .main-section {
     min-height: 100vh;
     display: flex;
@@ -95,7 +85,6 @@ body::before {
     animation: fadeInUp 1s ease-out;
 }
 
-/* Title Styling */
 .title-container {
     margin-bottom: 1.5rem;
 }
@@ -120,7 +109,6 @@ body::before {
     filter: drop-shadow(var(--accent-glow));
 }
 
-/* Detection Interface Styling */
 .detection-interface {
     background: var(--glass-bg);
     border: 1px solid var(--border-primary);
@@ -151,7 +139,6 @@ body::before {
     margin: 0;
 }
 
-/* Background Effects */
 .floating-particles {
     position: absolute;
     width: 100%;
@@ -192,7 +179,6 @@ body::before {
     }
 }
 
-/* === BUTTONS === */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -237,14 +223,24 @@ body::before {
 }
 
 .btn-secondary {
-    background: var(--bg-card);
+    background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
 }
 
 .btn-secondary:hover {
-    background: var(--glass-bg);
+    background: var(--bg-card);
     border-color: var(--border-accent);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #e63946;
     transform: translateY(-2px);
 }
 
@@ -259,20 +255,7 @@ body::before {
     border-color: var(--border-accent);
 }
 
-.btn-danger {
-    background: linear-gradient(135deg, var(--danger), #cc3636);
-    color: white;
-}
-
-.btn-danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(255, 71, 87, 0.3);
-}
-
-
-/* === DETECTION MODES === */
 .detection-modes {
-    /* Remove the background and border since it's now inside detection-interface */
     border-radius: 12px;
     padding: 0;
 }
@@ -309,7 +292,6 @@ body::before {
     box-shadow: var(--shadow-glow);
 }
 
-/* Mode Content */
 .mode-content {
     display: none;
     animation: fadeIn 0.3s ease;
@@ -324,7 +306,6 @@ body::before {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Upload Mode */
 .upload-container {
     display: grid;
     gap: 1.5rem;
@@ -396,7 +377,6 @@ body::before {
     justify-content: center;
 }
 
-/* Camera Mode */
 .camera-container {
     text-align: center;
 }
@@ -447,7 +427,6 @@ body::before {
     transition: var(--transition-normal);
 }
 
-/* Active streaming state - larger view */
 .camera-view.streaming #video-stream {
     height: 400px;
     max-height: 400px;
@@ -493,7 +472,8 @@ body::before {
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
-}/* === RESULTS PANEL === */
+}
+
 .results-panel {
     margin-top: 2rem;
     background: var(--glass-bg);
@@ -611,7 +591,6 @@ body::before {
     color: var(--text-muted);
 }
 
-/* === ABOUT SECTION === */
 .about-section {
     padding: 6rem 2rem;
     background: var(--bg-primary);
@@ -716,80 +695,6 @@ body::before {
     text-align: center;
 }
 
-/* === TECH STACK SECTION === */
-.tech-stack-section {
-    padding: 6rem 2rem;
-    background: var(--bg-secondary);
-    position: relative;
-}
-
-.tech-content {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-/* === CONTACT SECTION === */
-.contact-section {
-    padding: 6rem 2rem;
-    background: var(--bg-primary);
-    position: relative;
-}
-
-.contact-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.contact-links {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.contact-link {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--border-primary);
-    border-radius: 16px;
-    padding: 2rem;
-    text-decoration: none;
-    color: var(--text-primary);
-    backdrop-filter: var(--glass-backdrop);
-    transition: var(--transition-normal);
-}
-
-.contact-link:hover {
-    transform: translateY(-5px);
-    border-color: var(--border-accent);
-    box-shadow: var(--shadow-glow);
-    color: var(--text-primary);
-}
-
-.contact-icon {
-    font-size: 2.5rem;
-    color: var(--accent-primary);
-    flex-shrink: 0;
-}
-
-.contact-info {
-    flex: 1;
-}
-
-.contact-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-}
-
-.contact-description {
-    color: var(--text-secondary);
-    margin: 0;
-}
 .footer {
     background: var(--bg-tertiary);
     border-top: 1px solid var(--border-primary);
@@ -812,25 +717,6 @@ body::before {
     font-size: 0.9rem;
 }
 
-.footer-links {
-    display: flex;
-    gap: 1rem;
-}
-
-.footer-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: var(--transition-fast);
-}
-
-.footer-link:hover {
-    color: var(--accent-primary);
-}
-
-/* === LOADING OVERLAY === */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -874,7 +760,6 @@ body::before {
     font-weight: 500;
 }
 
-/* === UTILITIES === */
 .hidden {
     display: none !important;
 }
@@ -891,13 +776,7 @@ body::before {
     text-align: center;
 }
 
-/* === RESPONSIVE DESIGN === */
 @media (max-width: 1024px) {
-    .hero-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    
     .about-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
@@ -944,9 +823,7 @@ body::before {
         font-size: 0.8rem;
     }
     
-    .about-section,
-    .tech-stack-section,
-    .contact-section {
+    .about-section {
         padding: 3rem 1rem;
     }
     
@@ -965,12 +842,12 @@ body::before {
         min-height: 150px;
     }
     
-    #video-stream {
-        height: 150px;
-        max-height: 150px;
+    .camera-view.streaming #video-stream {
+        height: 300px;
+        max-height: 300px;
     }
     
-    .camera-view.streaming #video-stream {
+    .camera-view.streaming .camera-placeholder {
         height: 300px;
         max-height: 300px;
     }
@@ -984,11 +861,6 @@ body::before {
         max-height: 150px;
     }
     
-    .camera-view.streaming .camera-placeholder {
-        height: 300px;
-        max-height: 300px;
-    }
-    
     .placeholder-title {
         font-size: 1rem;
     }
@@ -999,10 +871,6 @@ body::before {
     }
     
     .about-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .contact-links {
         grid-template-columns: 1fr;
     }
     
@@ -1056,26 +924,16 @@ body::before {
 }
 
 @media (max-width: 480px) {
-    .hero-stats {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .stat-divider {
-        width: 40px;
-        height: 1px;
-    }
-    
     .upload-area {
         padding: 1.5rem 0.5rem;
     }
     
-    #video-stream {
-        height: 120px;
-        max-height: 120px;
+    .camera-view.streaming #video-stream {
+        height: 240px;
+        max-height: 240px;
     }
     
-    .camera-view.streaming #video-stream {
+    .camera-view.streaming .camera-placeholder {
         height: 240px;
         max-height: 240px;
     }
@@ -1087,11 +945,6 @@ body::before {
     .camera-placeholder {
         height: 120px;
         max-height: 120px;
-    }
-    
-    .camera-view.streaming .camera-placeholder {
-        height: 240px;
-        max-height: 240px;
     }
     
     .placeholder-title {
@@ -1118,12 +971,10 @@ body::before {
     }
 }
 
-/* === SMOOTH SCROLL === */
 html {
     scroll-behavior: smooth;
 }
 
-/* === FOCUS STYLES === */
 *:focus {
     outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
@@ -1134,7 +985,6 @@ html {
     box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
 }
 
-/* === SELECTION STYLES === */
 ::selection {
     background: var(--accent-primary);
     color: white;
@@ -1145,7 +995,6 @@ html {
     color: white;
 }
 
-/* === SCROLLBAR STYLES === */
 ::-webkit-scrollbar {
     width: 8px;
 }

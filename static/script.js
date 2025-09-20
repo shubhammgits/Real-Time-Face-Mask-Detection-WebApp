@@ -1,40 +1,28 @@
-// === GLOBAL VARIABLES ===
 let currentMode = 'upload';
 let isStreaming = false;
 let uploadedFile = null;
 
-// === DOM ELEMENTS ===
 const elements = {
-    // Mode tabs
     modeTabs: document.querySelectorAll('.mode-tab'),
     modeContents: document.querySelectorAll('.mode-content'),
-    
-    // Upload mode
     uploadArea: document.getElementById('upload-area'),
     fileInput: document.getElementById('file-input'),
     uploadPreview: document.getElementById('upload-preview'),
     previewImage: document.getElementById('preview-image'),
     analyzeBtn: document.getElementById('analyze-btn'),
     clearBtn: document.getElementById('clear-btn'),
-    
-    // Camera mode
     cameraView: document.getElementById('camera-view'),
     cameraPlaceholder: document.getElementById('camera-placeholder'),
     videoStream: document.getElementById('video-stream'),
     startCameraBtn: document.getElementById('start-camera'),
     stopCameraBtn: document.getElementById('stop-camera'),
     cameraStatus: document.getElementById('camera-status'),
-    
-    // Results
     resultsPanel: document.getElementById('results-panel'),
     resultsContent: document.getElementById('results-content'),
     closeResultsBtn: document.getElementById('close-results'),
-    
-    // Loading
     loadingOverlay: document.getElementById('loading-overlay')
 };
 
-// === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     initializeNavigation();
@@ -42,12 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeEventListeners() {
-    // Mode tabs
     elements.modeTabs.forEach(tab => {
         tab.addEventListener('click', () => switchMode(tab.dataset.mode));
     });
     
-    // Upload mode events
     if (elements.uploadArea) {
         elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
         elements.uploadArea.addEventListener('dragover', handleDragOver);
@@ -67,7 +53,6 @@ function initializeEventListeners() {
         elements.clearBtn.addEventListener('click', clearUpload);
     }
     
-    // Camera mode events
     if (elements.startCameraBtn) {
         elements.startCameraBtn.addEventListener('click', startCamera);
     }
@@ -76,14 +61,12 @@ function initializeEventListeners() {
         elements.stopCameraBtn.addEventListener('click', stopCamera);
     }
     
-    // Results panel
     if (elements.closeResultsBtn) {
         elements.closeResultsBtn.addEventListener('click', closeResults);
     }
 }
 
 function initializeNavigation() {
-    // Smooth scroll for any remaining anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -101,28 +84,24 @@ async function checkSystemStatus() {
         const status = await response.json();
         
         if (!status.model_loaded || !status.cascade_loaded) {
-            showNotification('⚠️ System initialization in progress...', 'warning');
+            showNotification('System initialization in progress...', 'warning');
         }
     } catch (error) {
         console.error('Status check failed:', error);
     }
 }
 
-// === MODE SWITCHING ===
 function switchMode(mode) {
     currentMode = mode;
     
-    // Update tab states
     elements.modeTabs.forEach(tab => {
         tab.classList.toggle('active', tab.dataset.mode === mode);
     });
     
-    // Update content visibility
     elements.modeContents.forEach(content => {
         content.classList.toggle('active', content.id === `${mode}-mode`);
     });
     
-    // Reset states
     if (mode === 'upload') {
         stopCamera();
         clearUpload();
@@ -134,7 +113,6 @@ function switchMode(mode) {
     closeResults();
 }
 
-// === UPLOAD MODE FUNCTIONS ===
 function handleDragOver(e) {
     e.preventDefault();
     elements.uploadArea.classList.add('dragover');
@@ -159,15 +137,13 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Validate file type
     if (!file.type.startsWith('image/')) {
-        showNotification('❌ Please select a valid image file', 'error');
+        showNotification('Please select a valid image file', 'error');
         return;
     }
     
-    // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-        showNotification('❌ Image size must be less than 10MB', 'error');
+        showNotification('Image size must be less than 10MB', 'error');
         return;
     }
     
@@ -195,7 +171,7 @@ function clearUpload() {
 
 async function analyzeImage() {
     if (!uploadedFile) {
-        showNotification('❌ Please select an image first', 'error');
+        showNotification('Please select an image first', 'error');
         return;
     }
     
@@ -214,24 +190,22 @@ async function analyzeImage() {
         
         if (result.success) {
             displayResults(result.image, result.detections);
-            showNotification('✅ Analysis complete!', 'success');
+            showNotification('Analysis complete!', 'success');
         } else {
             throw new Error(result.error || 'Analysis failed');
         }
     } catch (error) {
         console.error('Analysis error:', error);
-        showNotification(`❌ Analysis failed: ${error.message}`, 'error');
+        showNotification(`Analysis failed: ${error.message}`, 'error');
     } finally {
         showLoading(false);
     }
 }
 
-// === CAMERA MODE FUNCTIONS ===
 async function startCamera() {
     try {
         updateCameraStatus('Starting camera...', 'loading');
         
-        // Check camera availability first
         const cameraResponse = await fetch('/camera_status');
         const cameraStatus = await cameraResponse.json();
         
@@ -239,7 +213,6 @@ async function startCamera() {
             throw new Error('Camera not available');
         }
         
-        // Start video stream
         const streamUrl = '/video_feed';
         elements.videoStream.src = `${streamUrl}?t=${Date.now()}`;
         
@@ -249,7 +222,6 @@ async function startCamera() {
             elements.startCameraBtn.style.display = 'none';
             elements.stopCameraBtn.style.display = 'inline-block';
             
-            // Add streaming class for expanded view
             elements.cameraView.classList.add('streaming');
             
             isStreaming = true;
@@ -263,7 +235,7 @@ async function startCamera() {
     } catch (error) {
         console.error('Camera start error:', error);
         updateCameraStatus('Camera failed to start', 'error');
-        showNotification(`❌ Camera error: ${error.message}`, 'error');
+        showNotification(`Camera error: ${error.message}`, 'error');
     }
 }
 
@@ -273,7 +245,6 @@ function stopCamera() {
         elements.videoStream.style.display = 'none';
     }
     
-    // Remove streaming class to return to normal size
     if (elements.cameraView) {
         elements.cameraView.classList.remove('streaming');
     }
@@ -294,7 +265,6 @@ function updateCameraStatus(text, state = 'ready') {
     statusElement.querySelector('.status-text').textContent = text;
 }
 
-// === RESULTS DISPLAY ===
 function displayResults(processedImage, detections) {
     let resultsHTML = '';
     
@@ -308,7 +278,7 @@ function displayResults(processedImage, detections) {
                             <div class="detection-card ${detection.label.toLowerCase().replace(' ', '-')}">
                                 <div>
                                     <div class="detection-label ${detection.label.toLowerCase().replace(' ', '-')}">
-                                        ${detection.label === 'Masked' ? '😷' : '😐'} ${detection.label}
+                                        ${detection.label}
                                     </div>
                                     <div class="detection-bbox">Face ${index + 1}</div>
                                 </div>
@@ -322,7 +292,6 @@ function displayResults(processedImage, detections) {
     } else {
         resultsHTML = `
             <div class="no-detections">
-                <div class="no-detections-icon">😕</div>
                 <p>No faces detected in the image</p>
                 <p class="text-muted">Make sure the image contains visible faces</p>
             </div>
@@ -332,7 +301,6 @@ function displayResults(processedImage, detections) {
     elements.resultsContent.innerHTML = resultsHTML;
     elements.resultsPanel.style.display = 'block';
     
-    // Scroll to results
     setTimeout(() => {
         elements.resultsPanel.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -344,7 +312,6 @@ function closeResults() {
     }
 }
 
-// === UTILITY FUNCTIONS ===
 function showLoading(show) {
     if (elements.loadingOverlay) {
         elements.loadingOverlay.style.display = show ? 'flex' : 'none';
@@ -352,7 +319,6 @@ function showLoading(show) {
 }
 
 function showNotification(message, type = 'info') {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -361,7 +327,6 @@ function showNotification(message, type = 'info') {
         </div>
     `;
     
-    // Add styles
     notification.style.cssText = `
         position: fixed;
         top: 100px;
@@ -390,7 +355,6 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 4 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOutRight 0.3s ease';
         setTimeout(() => {
@@ -401,7 +365,6 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-// Helper function for smooth scrolling
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -409,14 +372,11 @@ function scrollToSection(sectionId) {
     }
 }
 
-// === KEYBOARD SHORTCUTS ===
 document.addEventListener('keydown', (e) => {
-    // ESC to close results
     if (e.key === 'Escape') {
         closeResults();
     }
     
-    // Space to start/stop camera (when in camera mode)
     if (e.key === ' ' && currentMode === 'camera' && e.target.tagName !== 'INPUT') {
         e.preventDefault();
         if (isStreaming) {
@@ -427,7 +387,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// === ANIMATION STYLES ===
 const animationStyles = `
     @keyframes slideInRight {
         from {
@@ -452,7 +411,6 @@ const animationStyles = `
     }
 `;
 
-// Inject animation styles
 const styleSheet = document.createElement('style');
 styleSheet.textContent = animationStyles;
 document.head.appendChild(styleSheet);
