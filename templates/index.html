@@ -3,142 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Face Mask Detection</title>
+    <title>Face Mask Detection - AI Powered</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😷</text></svg>">
 </head>
 <body>
-    
-
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="#home" class="navbar-logo">Real Time Face Mask Detection</a>
-            <ul class="nav-menu">
-                <li class="nav-item"><a class="nav-links" href="#home">Home</a></li>
-                <li class="nav-item"><a class="nav-links" href="#about">About Project</a></li>
-                <li class="nav-item"><a class="nav-links" href="#who">About Me</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <header id="home" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-heading">Real-Time Face Mask Detection</h1>
-            <p class="hero-subtext">Using Deep Learning.</p>
-            <div class="hero-buttons">
-                <a href="#realtime" id="cta-detect" class="btn btn-primary ripple">Start Real-Time Detection</a>
+    <!-- Main Detection Section -->
+    <section id="main" class="main-section">
+        <div class="main-container">
+            <!-- Title -->
+            <div class="title-container">
+                <h1 class="main-title">
+                    <span class="title-line">Face Mask</span>
+                    <span class="title-line highlight">Detection System</span>
+                </h1>
             </div>
-        </div>
-    </header>
-
-    <section id="realtime" class="detection-section section hidden">
-        <div class="detection-container card-glass">
-            <h2 class="section-heading">Face Mask Detection</h2>
-            <div class="detection-layout">
-                <div class="camera-section">
-                    <div class="mode-selector">
-                        <button id="capture-mode-btn" class="mode-btn active">📷 Capture Mode</button>
-                        <button id="stream-mode-btn" class="mode-btn">📹 Stream Mode</button>
+            
+            <!-- Detection Interface -->
+            <div class="detection-interface">
+                <div class="interface-header">
+                    <h2 class="interface-title">Face Mask Detection</h2>
+                    <p class="interface-subtitle">Choose your detection method below</p>
+                </div>
+                
+                <div class="detection-modes">
+                    <div class="mode-tabs">
+                        <button class="mode-tab active" data-mode="upload">
+                            <span class="tab-icon">🖼️</span>
+                            <span class="tab-text">Upload Image</span>
+                        </button>
+                        <button class="mode-tab" data-mode="camera">
+                            <span class="tab-icon">📹</span>
+                            <span class="tab-text">Live Camera</span>
+                        </button>
                     </div>
                     
-                    <div class="webcam-container glow-pulse">
-                        <video id="webcam-video" autoplay muted style="display: none;"></video>
-                        <canvas id="webcam-canvas" style="display: none;"></canvas>
-                        <img id="stream-feed" data-video-url="{{ url_for('video_feed') }}" src="" alt="Stream Feed" style="display: none;" />
-                        <div id="camera-placeholder" class="camera-placeholder">
-                            <div class="placeholder-icon">📷</div>
-                            <p>Select a mode to start</p>
+                    <!-- Upload Mode -->
+                    <div class="mode-content active" id="upload-mode">
+                        <div class="upload-container">
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-content">
+                                    <div class="upload-icon">📷</div>
+                                    <h3 class="upload-title">Drop your image here</h3>
+                                    <p class="upload-text">or click to browse files</p>
+                                    <p class="upload-formats">Supports: JPG, PNG, GIF, BMP</p>
+                                </div>
+                                <input type="file" id="file-input" accept="image/*" hidden>
+                            </div>
+                            
+                            <div class="upload-preview" id="upload-preview" style="display: none;">
+                                <img id="preview-image" src="" alt="Preview">
+                                <div class="preview-actions">
+                                    <button class="btn btn-primary" id="analyze-btn">
+                                        <span class="btn-icon">🔍</span>
+                                        Analyze Image
+                                    </button>
+                                    <button class="btn btn-secondary" id="clear-btn">
+                                        <span class="btn-icon">🗑️</span>
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="button-group">
-                        <button id="start-camera-btn" class="btn btn-primary ripple">Start Camera</button>
-                        <button id="capture-btn" class="btn btn-secondary ripple" style="display: none;">Capture Photo</button>
-                        <button id="start-stream-btn" class="btn btn-primary ripple" style="display: none;">Start Streaming</button>
-                        <button id="stop-camera-btn" class="btn btn-secondary ripple" style="display: none;">Stop</button>
-                    </div>
-                    <div id="camera-status" class="status-badge">Ready</div>
-                </div>
-                
-                <div class="result-section">
-                    <div class="result-container">
-                        <h3>Detection Result</h3>
-                        <div id="result-content" class="result-content">
-                            <div class="no-result">
-                                <div class="no-result-icon">🔍</div>
-                                <p>Select a mode and start to see detection results</p>
+                    <!-- Camera Mode -->
+                    <div class="mode-content" id="camera-mode">
+                        <div class="camera-container">
+                            <div class="camera-view" id="camera-view">
+                                <div class="camera-placeholder" id="camera-placeholder">
+                                    <div class="placeholder-content">
+                                        <div class="placeholder-icon">📹</div>
+                                        <h3 class="placeholder-title">Camera Ready</h3>
+                                        <p class="placeholder-text">Click start to begin real-time detection</p>
+                                    </div>
+                                </div>
+                                <img id="video-stream" src="" alt="Live Stream" style="display: none;">
+                            </div>
+                            
+                            <div class="camera-controls">
+                                <button class="btn btn-primary" id="start-camera">
+                                    <span class="btn-icon">▶️</span>
+                                    Start Camera
+                                </button>
+                                <button class="btn btn-danger" id="stop-camera" style="display: none;">
+                                    <span class="btn-icon">⏹️</span>
+                                    Stop Camera
+                                </button>
+                            </div>
+                            
+                            <div class="camera-status" id="camera-status">
+                                <span class="status-dot"></span>
+                                <span class="status-text">Ready</span>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Results Panel -->
+                <div class="results-panel" id="results-panel" style="display: none;">
+                    <div class="results-header">
+                        <h3 class="results-title">Detection Results</h3>
+                        <button class="btn btn-ghost" id="close-results">
+                            <span class="btn-icon">✖️</span>
+                        </button>
+                    </div>
+                    
+                    <div class="results-content" id="results-content">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Particles Background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </section>
+
+    <!-- Detection Section -->
+    <section id="detection" class="detection-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Face Mask Detection</h2>
+                <p class="section-subtitle">Choose your detection method below</p>
+            </div>
+            
+            <div class="detection-modes">
+                <div class="mode-tabs">
+                    <button class="mode-tab active" data-mode="upload">
+                        <span class="tab-icon">🖼️</span>
+                        <span class="tab-text">Upload Image</span>
+                    </button>
+                    <button class="mode-tab" data-mode="camera">
+                        <span class="tab-icon">📹</span>
+                        <span class="tab-text">Live Camera</span>
+                    </button>
+                </div>
+                
+                <!-- Upload Mode -->
+                <div class="mode-content active" id="upload-mode">
+                    <div class="upload-container">
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-content">
+                                <div class="upload-icon">📷</div>
+                                <h3 class="upload-title">Drop your image here</h3>
+                                <p class="upload-text">or click to browse files</p>
+                                <p class="upload-formats">Supports: JPG, PNG, GIF, BMP</p>
+                            </div>
+                            <input type="file" id="file-input" accept="image/*" hidden>
+                        </div>
+                        
+                        <div class="upload-preview" id="upload-preview" style="display: none;">
+                            <img id="preview-image" src="" alt="Preview">
+                            <div class="preview-actions">
+                                <button class="btn btn-primary" id="analyze-btn">
+                                    <span class="btn-icon">🔍</span>
+                                    Analyze Image
+                                </button>
+                                <button class="btn btn-secondary" id="clear-btn">
+                                    <span class="btn-icon">🖺</span>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Camera Mode -->
+                <div class="mode-content" id="camera-mode">
+                    <div class="camera-container">
+                        <div class="camera-view" id="camera-view">
+                            <div class="camera-placeholder" id="camera-placeholder">
+                                <div class="placeholder-content">
+                                    <div class="placeholder-icon">📹</div>
+                                    <h3 class="placeholder-title">Camera Ready</h3>
+                                    <p class="placeholder-text">Click start to begin real-time detection</p>
+                                </div>
+                            </div>
+                            <img id="video-stream" src="" alt="Live Stream" style="display: none;">
+                        </div>
+                        
+                        <div class="camera-controls">
+                            <button class="btn btn-primary" id="start-camera">
+                                <span class="btn-icon">▶️</span>
+                                Start Camera
+                            </button>
+                            <button class="btn btn-danger" id="stop-camera" style="display: none;">
+                                <span class="btn-icon">⏹️</span>
+                                Stop Camera
+                            </button>
+                        </div>
+                        
+                        <div class="camera-status" id="camera-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="results-panel" id="results-panel" style="display: none;">
+                <div class="results-header">
+                    <h3 class="results-title">Detection Results</h3>
+                    <button class="btn btn-ghost" id="close-results">
+                        <span class="btn-icon">✖️</span>
+                    </button>
+                </div>
+                
+                <div class="results-content" id="results-content">
+                    <!-- Results will be populated here -->
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="about-section section">
-        <div class="about-container card-glass">
-            <h2 class="section-heading">About This Project</h2>
-            <p class="about-text">This project implements a real-time face mask detection system using Deep Learning and Transfer Learning (MobileNetV2). The goal is to classify whether a person is wearing a mask or not from video streams as well as static images. Built with TensorFlow, Keras, and OpenCV.</p>
-            <p class="about-text">It's intentionally simple to run no local CUDA/cuDNN or complex setup needed. The model was developed and tested in Google Colab and trained on a combined dataset of multiple Kaggle sources (~18k images) with standard preprocessing and augmentation.</p>
-            <div class="about-grid">
-                <div class="about-card">
-                    <div class="about-card-title">🚀 Importance</div>
-                    <ul class="about-list">
-                        <li>Enforces safety protocols in public spaces</li>
-                        <li>Helps prevent spread of infectious diseases</li>
-                        <li>Low-cost, scalable support for authorities</li>
-                    </ul>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">About This Project</h2>
+                <p class="section-subtitle">Advanced AI technology for mask detection</p>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3 class="feature-title">AI-Powered</h3>
+                        <p class="feature-description">
+                            Built with TensorFlow and deep learning models for accurate face mask detection
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Real-time</h3>
+                        <p class="feature-description">
+                            Instant detection and analysis with live camera feed processing
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">High Accuracy</h3>
+                        <p class="feature-description">
+                            Trained on thousands of images for reliable mask compliance detection
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">Privacy First</h3>
+                        <p class="feature-description">
+                            All processing is done locally - your images never leave your device
+                        </p>
+                    </div>
                 </div>
-                <div class="about-card">
-                    <div class="about-card-title">📂 Dataset</div>
-                    <ul class="about-list">
-                        <li>~18,500 images (Mask/No Mask)</li>
-                        <li>Preprocessed to 224×224, normalized</li>
-                        <li>Augmented: flips, rotations, zoom</li>
-                    </ul>
-                </div>
-                <div class="about-card">
-                    <div class="about-card-title">🧠 Model (MobileNetV2)</div>
-                    <ul class="about-list">
-                        <li>GlobalAveragePooling2D, BatchNorm</li>
-                        <li>Dropout (0.5, 0.3), Dense heads</li>
-                        <li>Phase-1 freeze, Phase-2 fine-tune</li>
-                        <li>EarlyStopping, ReduceLROnPlateau, Checkpoints</li>
-                    </ul>
-                </div>
-                <div class="about-card">
-                    <div class="about-card-title">📌 Features</div>
-                    <ul class="about-list">
-                        <li>Real-time and single-capture detection</li>
-                        <li>High-accuracy MobileNetV2 backbone</li>
-                        <li>Lightweight and fast deployment</li>
-                    </ul>
+                
+                <div class="tech-stack">
+                    <h3 class="tech-title">Technology Stack</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <span class="tech-icon">🐍</span>
+                            <span class="tech-name">Python</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-icon">🧠</span>
+                            <span class="tech-name">TensorFlow</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-icon">🌶️</span>
+                            <span class="tech-name">Flask</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-icon">📷</span>
+                            <span class="tech-name">OpenCV</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-icon">✨</span>
+                            <span class="tech-name">JavaScript</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <p class="about-text repo-line"><span class="gh-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.77 5.46.77 11.73c0 4.92 3.19 9.09 7.62 10.56.56.1.77-.24.77-.54 0-.27-.01-1.16-.02-2.1-3.1.67-3.76-1.32-3.76-1.32-.51-1.29-1.25-1.64-1.25-1.64-1.02-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1 .1.8 2.06 2.86 1.46.1-.73.39-1.23.7-1.52-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.16-3-.12-.28-.5-1.42.11-2.96 0 0 .95-.3 3.11 1.15.9-.25 1.86-.38 2.82-.38.96 0 1.92.13 2.82.38 2.16-1.45 3.11-1.15 3.11-1.15.61 1.54.23 2.68.11 2.96.72.78 1.16 1.78 1.16 3 0 4.29-2.61 5.23-5.1 5.51.4.34.75 1.01.75 2.04 0 1.47-.01 2.66-.01 3.02 0 .3.2.65.78.54 4.43-1.47 7.61-5.64 7.61-10.56C23.23 5.46 18.27.5 12 .5z"/></svg>
-            </span> To know more, visit the repository: <a class="linkish" href="https://github.com/shubhammgits/Face-Mask-Detection-Using-Deep-Learning" target="_blank" rel="noopener">Face-Mask-Detection-Using-Deep-Learning</a></p>
         </div>
     </section>
 
-    <section id="who" class="who-made-this-section section">
-        <div class="who-made-this-container card-glass">
-            <h2 class="section-heading">About Me</h2>
-            <div class="profile-card compact">
-                <div class="social-links">
-                    <a class="social-link" href="https://github.com/shubhammgits" target="_blank" rel="noopener">GitHub</a>
-                    <a class="social-link" href="https://www.linkedin.com/in/shhshubham/" target="_blank" rel="noopener">LinkedIn</a>
-                    <a class="social-link" href="mailto:shubhamm18.work@gmail.com">Email</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <!-- Footer -->
     <footer class="footer">
-        <div class="footer-inner"></div>
+        <div class="footer-content">
+            <div class="footer-text">
+                <span>© 2024 Face Mask Detection System</span>
+            </div>
+        </div>
     </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Processing image...</div>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
