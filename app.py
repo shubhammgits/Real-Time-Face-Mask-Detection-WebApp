@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, jsonify, Response
+import os
+# Set environment variables to suppress TensorFlow warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress INFO and WARNING messages
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations warnings
+
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
-import os
 import base64
 from io import BytesIO
 from PIL import Image
@@ -24,12 +28,25 @@ def initialize_components():
             print(f"⚠️ Model file {model_path} not found. Using placeholder for demo.")
             model = None
         else:
-            model = load_model(model_path)
-            print(f"✅ Model loaded successfully from {model_path}")
-            print(f"📊 Model input shape: {model.input_shape}")
-            print(f"📊 Model output shape: {model.output_shape}")
+            # Try to load with custom_objects to handle compatibility
+            try:
+                model = load_model(model_path, compile=False)
+                print(f"✅ Model loaded successfully from {model_path}")
+                print(f"📊 Model input shape: {model.input_shape}")
+                print(f"📊 Model output shape: {model.output_shape}")
+            except Exception as load_error:
+                print(f"⚠️ Model loading failed with error: {load_error}")
+                print("🔄 Attempting alternative loading method...")
+                # Alternative loading with different parameters
+                try:
+                    import tensorflow as tf
+                    model = tf.keras.models.load_model(model_path, compile=False)
+                    print(f"✅ Model loaded with alternative method")
+                except Exception as alt_error:
+                    print(f"❌ Alternative loading also failed: {alt_error}")
+                    model = None
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f"❌ Error during model initialization: {e}")
         model = None
     
     try:
@@ -204,6 +221,10 @@ def generate_stream(camera_index=0):
 @app.route('/video_feed')
 def video_feed():
     try:
+        # Check if we're in a server environment
+        if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('PORT'):
+            return "Camera streaming not available in server environment", 503
+            
         return Response(generate_stream(), 
                        mimetype='multipart/x-mixed-replace; boundary=frame')
     except Exception as e:
@@ -213,12 +234,16 @@ def video_feed():
 @app.route('/camera_status')
 def camera_status():
     try:
+        # In production/server environment, camera is typically not available
+        if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('PORT'):
+            return jsonify({'available': False, 'reason': 'Camera not available in server environment'})
+        
         cap = cv2.VideoCapture(0)
         available = cap.isOpened()
         cap.release()
         return jsonify({'available': available})
-    except:
-        return jsonify({'available': False})
+    except Exception as e:
+        return jsonify({'available': False, 'reason': f'Camera error: {str(e)}'})
 
 @app.route('/model_status')
 def model_status():
