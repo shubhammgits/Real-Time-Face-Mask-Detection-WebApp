@@ -279,7 +279,6 @@ We welcome contributions from the community! Here's how you can help:
 
 ## 📧 Contact
 
-- **Developer**: Shubham
 - **GitHub**: [@shubhammgits](https://github.com/shubhammgits)
 - **LinkedIn**: [Shubham Kumar](https://www.linkedin.com/in/shhshubham/)
 
