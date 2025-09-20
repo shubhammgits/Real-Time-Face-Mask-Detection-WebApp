@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Mask Detection - AI Powered</title>
+    <title>Real time face mask detection</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😷</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%2300d4ff'/></svg>">
 </head>
 <body>
     <!-- Main Detection Section -->
@@ -32,11 +32,9 @@
                 <div class="detection-modes">
                     <div class="mode-tabs">
                         <button class="mode-tab active" data-mode="upload">
-                            <span class="tab-icon">🖼️</span>
                             <span class="tab-text">Upload Image</span>
                         </button>
                         <button class="mode-tab" data-mode="camera">
-                            <span class="tab-icon">📹</span>
                             <span class="tab-text">Live Camera</span>
                         </button>
                     </div>
@@ -46,7 +44,6 @@
                         <div class="upload-container">
                             <div class="upload-area" id="upload-area">
                                 <div class="upload-content">
-                                    <div class="upload-icon">📷</div>
                                     <h3 class="upload-title">Drop your image here</h3>
                                     <p class="upload-text">or click to browse files</p>
                                     <p class="upload-formats">Supports: JPG, PNG, GIF, BMP</p>
@@ -58,11 +55,9 @@
                                 <img id="preview-image" src="" alt="Preview">
                                 <div class="preview-actions">
                                     <button class="btn btn-primary" id="analyze-btn">
-                                        <span class="btn-icon">🔍</span>
                                         Analyze Image
                                     </button>
                                     <button class="btn btn-secondary" id="clear-btn">
-                                        <span class="btn-icon">🗑️</span>
                                         Clear
                                     </button>
                                 </div>
@@ -76,7 +71,6 @@
                             <div class="camera-view" id="camera-view">
                                 <div class="camera-placeholder" id="camera-placeholder">
                                     <div class="placeholder-content">
-                                        <div class="placeholder-icon">📹</div>
                                         <h3 class="placeholder-title">Camera Ready</h3>
                                         <p class="placeholder-text">Click start to begin real-time detection</p>
                                     </div>
@@ -86,11 +80,9 @@
                             
                             <div class="camera-controls">
                                 <button class="btn btn-primary" id="start-camera">
-                                    <span class="btn-icon">▶️</span>
                                     Start Camera
                                 </button>
                                 <button class="btn btn-danger" id="stop-camera" style="display: none;">
-                                    <span class="btn-icon">⏹️</span>
                                     Stop Camera
                                 </button>
                             </div>
@@ -108,7 +100,7 @@
                     <div class="results-header">
                         <h3 class="results-title">Detection Results</h3>
                         <button class="btn btn-ghost" id="close-results">
-                            <span class="btn-icon">✖️</span>
+                            ×
                         </button>
                     </div>
                     
@@ -139,7 +131,6 @@
             <div class="about-content">
                 <div class="about-grid">
                     <div class="feature-card">
-                        <div class="feature-icon">🧠</div>
                         <h3 class="feature-title">AI-Powered</h3>
                         <p class="feature-description">
                             Built with TensorFlow and deep learning models for accurate face mask detection
@@ -147,7 +138,6 @@
                     </div>
                     
                     <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
                         <h3 class="feature-title">Real-time</h3>
                         <p class="feature-description">
                             Instant detection and analysis with live camera feed processing
@@ -155,7 +145,6 @@
                     </div>
                     
                     <div class="feature-card">
-                        <div class="feature-icon">🎯</div>
                         <h3 class="feature-title">High Accuracy</h3>
                         <p class="feature-description">
                             Trained on thousands of images for reliable mask compliance detection
@@ -163,7 +152,6 @@
                     </div>
                     
                     <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
                         <h3 class="feature-title">Privacy First</h3>
                         <p class="feature-description">
                             All processing is done locally - your images never leave your device
@@ -175,23 +163,18 @@
                     <h3 class="tech-title">Technology Stack</h3>
                     <div class="tech-items">
                         <div class="tech-item">
-                            <span class="tech-icon">🐍</span>
                             <span class="tech-name">Python</span>
                         </div>
                         <div class="tech-item">
-                            <span class="tech-icon">🧠</span>
                             <span class="tech-name">TensorFlow</span>
                         </div>
                         <div class="tech-item">
-                            <span class="tech-icon">🌶️</span>
                             <span class="tech-name">Flask</span>
                         </div>
                         <div class="tech-item">
-                            <span class="tech-icon">📷</span>
                             <span class="tech-name">OpenCV</span>
                         </div>
                         <div class="tech-item">
-                            <span class="tech-icon">✨</span>
                             <span class="tech-name">JavaScript</span>
                         </div>
                     </div>

@@ -269,10 +269,6 @@ body::before {
     box-shadow: 0 6px 12px rgba(255, 71, 87, 0.3);
 }
 
-.btn-icon {
-    font-size: 1rem;
-}
-
 
 /* === DETECTION MODES === */
 .detection-modes {
@@ -311,10 +307,6 @@ body::before {
     background: var(--accent-gradient);
     color: white;
     box-shadow: var(--shadow-glow);
-}
-
-.tab-icon {
-    font-size: 1rem;
 }
 
 /* Mode Content */
@@ -367,17 +359,12 @@ body::before {
     pointer-events: none;
 }
 
-.upload-icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    color: var(--accent-primary);
-}
-
 .upload-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
+    text-align: center;
 }
 
 .upload-text {
@@ -438,17 +425,12 @@ body::before {
     text-align: center;
 }
 
-.placeholder-icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    color: var(--accent-primary);
-}
-
 .placeholder-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
+    text-align: center;
 }
 
 .placeholder-text {
@@ -467,13 +449,13 @@ body::before {
 
 /* Active streaming state - larger view */
 .camera-view.streaming #video-stream {
-    height: 280px;
-    max-height: 280px;
+    height: 400px;
+    max-height: 400px;
 }
 
 .camera-view.streaming .camera-placeholder {
-    height: 280px;
-    max-height: 280px;
+    height: 400px;
+    max-height: 400px;
 }
 
 .camera-controls {
@@ -681,17 +663,12 @@ body::before {
     box-shadow: var(--shadow-glow);
 }
 
-.feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: var(--accent-primary);
-}
-
 .feature-title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    color: var(--accent-primary);
+    text-align: center;
 }
 
 .feature-description {
@@ -720,11 +697,11 @@ body::before {
 .tech-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     background: var(--glass-bg);
     border: 1px solid var(--border-primary);
     border-radius: 12px;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.5rem;
     transition: var(--transition-normal);
 }
 
@@ -733,13 +710,10 @@ body::before {
     transform: translateY(-2px);
 }
 
-.tech-icon {
-    font-size: 1.2rem;
-}
-
 .tech-name {
     font-weight: 500;
     color: var(--text-primary);
+    text-align: center;
 }
 
 /* === TECH STACK SECTION === */
@@ -997,12 +971,8 @@ body::before {
     }
     
     .camera-view.streaming #video-stream {
-        height: 220px;
-        max-height: 220px;
-    }
-    
-    .upload-icon {
-        font-size: 1.5rem;
+        height: 300px;
+        max-height: 300px;
     }
     
     .upload-title {
@@ -1015,12 +985,8 @@ body::before {
     }
     
     .camera-view.streaming .camera-placeholder {
-        height: 220px;
-        max-height: 220px;
-    }
-    
-    .placeholder-icon {
-        font-size: 1.5rem;
+        height: 300px;
+        max-height: 300px;
     }
     
     .placeholder-title {
@@ -1110,8 +1076,8 @@ body::before {
     }
     
     .camera-view.streaming #video-stream {
-        height: 180px;
-        max-height: 180px;
+        height: 240px;
+        max-height: 240px;
     }
     
     .preview-actions {
@@ -1124,8 +1090,8 @@ body::before {
     }
     
     .camera-view.streaming .camera-placeholder {
-        height: 180px;
-        max-height: 180px;
+        height: 240px;
+        max-height: 240px;
     }
     
     .placeholder-title {
