@@ -268,9 +268,6 @@ We welcome contributions from the community! Here's how you can help:
 - Ensure responsive design compatibility
 - Test across multiple browsers and devices
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -284,7 +281,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Developer**: Shubham
 - **GitHub**: [@shubhammgits](https://github.com/shubhammgits)
-- **Project Link**: [Face Mask Detection Web App](https://github.com/yourusername/face-mask-detection-webapp)
+- **LinkedIn**: [Shubham Kumar](https://www.linkedin.com/in/shhshubham/)
 
 ---
 
