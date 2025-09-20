@@ -424,12 +424,12 @@ body::before {
 }
 
 .camera-placeholder {
-    aspect-ratio: 16/10;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--glass-bg);
-    min-height: 180px;
+    height: 180px;
+    max-height: 180px;
 }
 
 .placeholder-content {
@@ -456,7 +456,9 @@ body::before {
 
 #video-stream {
     width: 100%;
-    height: auto;
+    height: 180px;
+    max-height: 180px;
+    object-fit: cover;
     display: block;
 }
 
@@ -975,6 +977,11 @@ body::before {
         min-height: 150px;
     }
     
+    #video-stream {
+        height: 150px;
+        max-height: 150px;
+    }
+    
     .upload-icon {
         font-size: 1.5rem;
     }
@@ -984,7 +991,8 @@ body::before {
     }
     
     .camera-placeholder {
-        min-height: 150px;
+        height: 150px;
+        max-height: 150px;
     }
     
     .placeholder-icon {
@@ -1072,12 +1080,18 @@ body::before {
         padding: 1.5rem 0.5rem;
     }
     
+    #video-stream {
+        height: 120px;
+        max-height: 120px;
+    }
+    
     .preview-actions {
         flex-direction: column;
     }
     
     .camera-placeholder {
-        aspect-ratio: 4/3;
+        height: 120px;
+        max-height: 120px;
     }
     
     .placeholder-title {
