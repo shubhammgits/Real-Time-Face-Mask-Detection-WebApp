@@ -140,11 +140,14 @@ body::before {
 }
 
 .floating-particles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     z-index: 1;
+    pointer-events: none;
 }
 
 .particle {
@@ -592,7 +595,7 @@ body::before {
 }
 
 .about-section {
-    padding: 6rem 2rem;
+    padding: 3rem 2rem;
     background: var(--bg-primary);
     position: relative;
 }
@@ -604,7 +607,7 @@ body::before {
 
 .section-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .section-title {
@@ -623,7 +626,7 @@ body::before {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    margin-bottom: 4rem;
+    margin-bottom: 3.5rem;
 }
 
 .feature-card {
@@ -662,7 +665,7 @@ body::before {
 .tech-title {
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     color: var(--text-primary);
 }
 
@@ -698,7 +701,7 @@ body::before {
 .footer {
     background: var(--bg-tertiary);
     border-top: 1px solid var(--border-primary);
-    padding: 2rem;
+    padding: 1rem;
     text-align: center;
 }
 
@@ -714,7 +717,7 @@ body::before {
 
 .footer-text {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.75rem;
 }
 
 .loading-overlay {
